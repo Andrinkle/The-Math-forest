@@ -1,0 +1,50 @@
+class MathRelation:
+    Класс математических отношений A~B, где ~ отн. к (=, <, >, !=, <=, >=).
+    В данном классе реализованы основные действия с мат. выражениями,
+    которые используются во всех задачах.
+
+
+
+class LinearEquality(MathRelation):
+    Класс решения псевдо-линейных уравнений.
+
+class SquareEquality(MathRelation):
+    Класс решения псевдо-квадратных уравнений.
+
+class MathEquality(LinearEquality, SquareEquality):
+    Класс уравнений.
+    В данном классе реализована классификация уравнений.
+
+
+
+class LinearInequality(LinearEquality):
+    Класс решения псевдо-линейных неравенств.
+
+class LinearInequality2Var(LinearInequality):
+    Класс решения псевдо-линейных неравенств с 2 переменными.
+
+class SquareInequality(SquareEquality):
+    Класс решения псевдо-квадратных неравенств.
+
+class MathInequality(MathEquality, LinearInequality, LinearInequality2Var, SquareInequality):
+    Класс неравенств.
+    В данном классе реализована классификация неравенств.
+
+
+
+class MathSystems(MathRelation):
+    Класс действий над системами.
+
+class SystemEquality1Var(...):
+    Класс систем уравнений с 1 переменной.
+
+class SystemInequality1Var(...):
+    Класс систем неравенств с 1 переменной.
+
+class SystemEquality2Var(...):
+    Класс систем псевдо-линейных уравнений с 2 переменными.
+
+
+
+class MathExpression(MathEquality, MathInequality, ...):
+    Класс математических выражений (уравнений, неравенст, систем)
