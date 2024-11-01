@@ -33,7 +33,21 @@ class MathRelation:
         exp_list = expression.split(sign)
         self.left_side = sympy.sympify(exp_list[0], evaluate=False)
         self.right_side = sympy.sympify(exp_list[1], evaluate=False)
-        self.sign = sign
+        self.__sign = sign
+        self.__stages_of_solving = []
+        self.app_stage("Начальная задача")
+
+
+    def app_stage(self, description:str):
+        """Добавление нового этапа в решение."""
+        self.__stages_of_solving.append([description, str(self)])
+
+
+    def print_stages(self):
+        """Вывод всех этапов решения."""
+        for i in self.__stages_of_solving:
+            print(i[0])
+            print("  " + i[1])
 
 
     def reduction(self):
@@ -53,7 +67,7 @@ class MathRelation:
 
 
     def __str__(self):
-        return f"{self.left_side} {self.sign} {self.right_side}"
+        return f"{self.left_side} {self.__sign} {self.right_side}"
 
 
     def replacing(self, expression):

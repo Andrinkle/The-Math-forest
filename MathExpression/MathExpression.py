@@ -11,12 +11,12 @@ class MathExpression(MathInequality):
     system = 's'
 
     def __init__(self, str_expression: str, variable: str):
-        self.sign = MathExpression.define_expression_type(str_expression)
-        if self.sign == '=':
+        sign = MathExpression.define_expression_type(str_expression)
+        if sign == '=':
             MathEquality.__init__(self, str_expression, variable)
             self.type_expression = MathExpression.equality
         else:
-            MathInequality.__init__(self, str_expression, self.sign, variable)
+            MathInequality.__init__(self, str_expression, sign, variable)
             self.type_expression = MathExpression.inequality
 
 

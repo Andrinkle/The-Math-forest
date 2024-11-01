@@ -9,28 +9,22 @@ class LinearEquality(MathRelation):
         """Решение линейного уравнения."""
 
         if self.left_side != sympy.powsimp(self.left_side) or self.right_side != sympy.powsimp(self.right_side):
-            print("Сокращаем обе стороны:")
             self.reduction()
-            print("  ", self)
+            self.app_stage("Сокращаем обе стороны")
 
         if self.right_side.subs(self.var, 0) != self.right_side:
-            print(f"Переносим члены, содержащие переменную {self.var}, влево:")
             self.left_side = sympy.powsimp(self.left_side - (self.right_side - self.right_side.subs(self.var, 0)))
             self.right_side = self.right_side.subs(self.var, 0)
-            print("  ", self)
+            self.app_stage(f"Переносим члены, содержащие переменную {self.var}, влево")
 
         if self.left_side.subs(self.var, 0) != 0:
-            print(f"Переносим члены, не содержащие переменную {self.var}, вправо:")
             self.right_side = sympy.powsimp(self.right_side - self.left_side.subs(self.var, 0))
             self.left_side = sympy.powsimp(self.left_side - self.left_side.subs(self.var, 0))
-            print("  ", self)
+            self.app_stage(f"Переносим члены, не содержащие переменную {self.var}, вправо")
 
         divisor = self.left_side.subs(self.var, 1)
         if divisor != 1:
-            print(f"Делим обе стороны на {divisor}:")
             self.right_side /= divisor
             self.left_side /= divisor
-            print("  ", self)
-
-        return self.right_side
+            self.app_stage(f"Делим обе стороны на {divisor}")
 
