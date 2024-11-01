@@ -7,23 +7,23 @@ class SquareEquality(MathRelation):
 
     def solving_square_equation(self):
         """Решение квадратного уравнения."""
-        print(" " + str(self))
-        if self.left_side != sympy.powsimp(self.left_side) or self.right_side != sympy.powsimp(self.right_side):
-            print("Сокращаем обе стороны:")
-            self.reduction()
-            print(" " + str(self))
 
-        if self.right_side.subs(self.var, 1) - self.right_side != 0:
-            print(f"Переносим члены, содержащие переменную {self.var}, влево:")
+        if self.right_side != 0:
+            self.moving()
+            self.app_stage("Перемещаем всё в левую сторону")
+        
+        if self.left_side != sympy.powsimp(self.left_side) or self.right_side != sympy.powsimp(self.right_side):
+            self.reduction()
+            self.app_stage("Сокращаем обе стороны")
+
+        if self.right_side.subs(self.var, 0) != self.right_side:
             self.left_side = sympy.powsimp(self.left_side - (self.right_side - self.right_side.subs(self.var, 0)))
             self.right_side = self.right_side.subs(self.var, 0)
-            print(" " + str(self))
+            self.app_stage(f"Переносим члены, содержащие переменную {self.var}, влево")
 
         if self.left_side.subs(self.var, 0) != 0:
-            print(f"Переносим члены, не содержащие переменную {self.var}, вправо:")
             self.right_side = sympy.powsimp(self.right_side - self.left_side.subs(self.var, 0))
             self.left_side = sympy.powsimp(self.left_side - self.left_side.subs(self.var, 0))
-            print(" " + str(self))
 
         # Решение
         koefs = (self.left_side).args # Выделение коэфицентов

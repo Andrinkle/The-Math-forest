@@ -70,5 +70,13 @@ class MathRelation:
         return f"{self.left_side} {self.__sign} {self.right_side}"
 
 
+    def discard_coef(self, expression):
+        """Если expression имеет вид a*t(x)^b, то возвращается [t(x), b]"""
+        if (expression.func == sympy.core.mul.Mul) and (expression.args[0].func in SP_TYPES_NUMS):
+            expression = expression.args[1]
+        if (expression.func == sympy.core.power.Pow) and (expression.args[1].func in SP_TYPES_NUMS):
+            return [expression.args[0], expression.args[1]]
+        return [expression, 1]
+    
     def replacing(self, expression):
         pass

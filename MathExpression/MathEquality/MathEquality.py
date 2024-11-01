@@ -26,15 +26,7 @@ class MathEquality(LinearEquality, SquareEquality):
         def check_1(expression) -> bool:
             """Если сумма двух слагаемых имеет вид a*t(x)^2 + b*t(x)"""
 
-            def discard_coef(expression):
-                """Если expression имеет вид a*t(x)^b, то возвращается [t(x), b]"""
-                if (expression.func == sympy.core.mul.Mul) and (expression.args[0].func in SP_TYPES_NUMS):
-                    expression = expression.args[1]
-                if (expression.func == sympy.core.power.Pow) and (expression.args[1].func in SP_TYPES_NUMS):
-                    return [expression.args[0], expression.args[1]]
-                return [expression, 1]
-
-            temp = [discard_coef(expression.args[0]), discard_coef(expression.args[1])]
+            temp = [self.discard_coef(expression.args[0]), self.discard_coef(expression.args[1])]
             if (temp[0][0] == temp[1][0]) and (temp[0][1]*2 == temp[1][1] or temp[0][1] == temp[1][1]*2):
                 return True
             return False
