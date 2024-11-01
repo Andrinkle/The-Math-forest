@@ -2,6 +2,7 @@ from MathExpression.MathRelation import MathRelation
 import sympy
 
 
+
 class LinearEquality(MathRelation):
     """Класс решения псевдо-линейных уравнений."""
 
@@ -27,4 +28,6 @@ class LinearEquality(MathRelation):
             self.right_side /= divisor
             self.left_side /= divisor
             self.app_stage(f"Делим обе стороны на {divisor}")
+
+        return [self.right_side]
 

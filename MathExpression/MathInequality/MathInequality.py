@@ -22,12 +22,6 @@ class MathInequality(MathEquality, LinearInequality, SquareInequality):
 
     def __init__(self, str_expression: str, sign: str, variable: str):
         MathRelation.__init__(self, str_expression, sign, variable)
-        self.type_equality = self.define_equality_type()
-
-
-    def define_inequality_type(self) -> str:
-        """Определяет тип уравнения"""
-        pass
 
 
     def solving_inequation(self):
