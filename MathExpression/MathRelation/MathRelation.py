@@ -46,8 +46,12 @@ class MathRelation:
         self.left_side = sympy.sympify(exp_list[0], evaluate=False)
         # Правая сторона
         self.right_side = sympy.sympify(exp_list[1], evaluate=False)
+        # Разделить, если необходимо
+        self.common_divisor = None
         # Тип отношения
         self.type_relation = self.define_relation_type()
+        # Корни уравнения (!)
+        self.answer = []
 
         self.__sign = sign
         self.__stages_of_solving = []
@@ -65,11 +69,21 @@ class MathRelation:
                 return True
             return False
 
-        temp_expr = sympy.powsimp(self.left_side - self.right_side)
+        temp_expr = sympy.expand(sympy.powsimp(self.left_side - self.right_side))
+
+        # Вынесение и удаление общих делителей
+        if (temp_expr != sympy.factor(temp_expr)) and (
+            # Если второй аргумент функции с конца является сумма,
+            # то эта функция либо возведение в степень, либо умножение минимум двух сумм,
+            # оба случая игнорируются
+            sympy.factor(temp_expr).args[-2].func != sympy.core.add.Add):
+                temp = sympy.factor(temp_expr).args[-1]
+                self.common_divisor = sympy.cancel(temp_expr / temp)
+                temp_expr = temp
 
         # Если 0 слагаемых
         if temp_expr.func == sympy.core.numbers.Zero:
-            return MathRelation.linear
+            return MathRelation.undefined
 
         # Если 1 слагаемое
         elif temp_expr.func != sympy.core.add.Add:
@@ -112,9 +126,9 @@ class MathRelation:
 
 
     def reduction(self):
-        """Сокращение обеих сторон выражения."""
-        self.left_side = sympy.powsimp(self.left_side)
-        self.right_side = sympy.powsimp(self.right_side)
+        """Сокращение обеих сторон выражения и раскрытие скобок."""
+        self.left_side = sympy.expand(sympy.powsimp(self.left_side))
+        self.right_side = sympy.expand(sympy.powsimp(self.right_side))
 
 
     def moving(self, side: Side = Side.left):
@@ -138,6 +152,22 @@ class MathRelation:
         if (expression.func == sympy.core.power.Pow) and (expression.args[1].func in SP_TYPES_NUMS):
             return [expression.args[0], expression.args[1]]
         return [expression, 1]
-    
+
+
+    def divide_by_common_divisor(self):
+        """Делит выражение на self.common_divisor."""
+        if not self.common_divisor:
+            pass
+        elif self.common_divisor.subs(self.var, 0).func == sympy.core.numbers.ComplexInfinity:
+            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
+            self.app_stage(f"Умножим обе стороны на {self.common_divisor ** -1}")
+        elif self.common_divisor.subs(self.var, 0) == 0:
+            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
+            self.app_stage(f"Разделим обе стороны на {self.common_divisor}")
+            self.answer.append(0)
+
+
     def replacing(self, expression):
         pass

@@ -52,16 +52,11 @@ class MathExpression(MathInequality):
 
         if self.type_expression == MathExpression.equality:
             print("Ответ:")
-            if self.type_relation == MathRelation.linear:
-                print(f"  {self.var} = {self.answer[0]}")
-            if self.type_relation == MathRelation.quadratic:
-                if len(self.answer) == 0:
-                    print("  Решения нет.")
-                elif len(self.answer) == 1:
-                    print(f"  {self.var} = {self.answer[0]}")
-                elif len(self.answer) == 2:
-                    print(f"  {self.var}_1 = {self.answer[0]}")
-                    print(f"  {self.var}_2 = {self.answer[1]}")
+            if len(self.answer) == 0:
+                print("  Решения нет.")
+            else:
+                for i in self.answer:
+                    print(f"  {self.var} = {i}")
 
         elif self.type_expression == MathExpression.inequality:
             pass

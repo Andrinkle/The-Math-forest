@@ -9,9 +9,12 @@ class LinearEquality(MathRelation):
     def solving_linear_equation(self):
         """Решение линейного уравнения."""
 
-        if self.left_side != sympy.powsimp(self.left_side) or self.right_side != sympy.powsimp(self.right_side):
-            self.reduction()
+        temp = [self.left_side, self.right_side]
+        self.reduction()
+        if temp[0] != self.left_side or temp[1] != self.right_side:
             self.app_stage("Сокращаем обе стороны")
+
+        self.divide_by_common_divisor()
 
         if self.right_side.subs(self.var, 0) != self.right_side:
             self.left_side = sympy.powsimp(self.left_side - (self.right_side - self.right_side.subs(self.var, 0)))
@@ -27,7 +30,7 @@ class LinearEquality(MathRelation):
         if divisor != 1:
             self.right_side /= divisor
             self.left_side /= divisor
-            self.app_stage(f"Делим обе стороны на {divisor}")
+            self.app_stage(f"Разделим обе стороны на {divisor}")
 
-        return [self.right_side]
+        return self.right_side
 
