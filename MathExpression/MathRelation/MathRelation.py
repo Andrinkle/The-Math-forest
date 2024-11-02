@@ -47,9 +47,9 @@ class MathRelation:
         # Правая сторона
         self.right_side = sympy.sympify(exp_list[1], evaluate=False)
         # Разделить, если необходимо
-        self.common_divisor = None
+        self.__common_divisor = None
         # Тип отношения
-        self.type_relation = self.define_relation_type()
+        self.type_relation = self.__define_relation_type()
         # Корни уравнения (!)
         self.answer = []
 
@@ -58,17 +58,17 @@ class MathRelation:
         self.app_stage("Начальная задача")
 
 
-    def define_relation_type(self) -> str:
+    def __define_relation_type(self) -> str:
         """Определяет тип отношения."""
 
-        def check_1(expression) -> bool:
+        def __check_1(expression) -> bool:
             """Если сумма двух слагаемых имеет вид a*t(x)^2 + b*t(x)"""
-
             temp = [self.discard_coef(expression.args[0]), self.discard_coef(expression.args[1])]
             if (temp[0][0] == temp[1][0]) and (temp[0][1]*2 == temp[1][1] or temp[0][1] == temp[1][1]*2):
                 return True
             return False
 
+        # Временное выражение для проверки
         temp_expr = sympy.expand(sympy.powsimp(self.left_side - self.right_side))
 
         # Вынесение и удаление общих делителей
@@ -77,9 +77,10 @@ class MathRelation:
             # то эта функция либо возведение в степень, либо умножение минимум двух сумм,
             # оба случая игнорируются
             sympy.factor(temp_expr).args[-2].func != sympy.core.add.Add):
-                temp = sympy.factor(temp_expr).args[-1]
-                self.common_divisor = sympy.cancel(temp_expr / temp)
-                temp_expr = temp
+
+            temp = sympy.factor(temp_expr).args[-1]
+            self.__common_divisor = sympy.cancel(temp_expr / temp)
+            temp_expr = temp
 
         # Если 0 слагаемых
         if temp_expr.func == sympy.core.numbers.Zero:
@@ -94,16 +95,16 @@ class MathRelation:
             # Если одно из слагаемых - число
             if temp_expr.args[0].func in SP_TYPES_NUMS or temp_expr.args[1].func in SP_TYPES_NUMS:
                 return MathRelation.linear
-            # Если сумма имеет вид a*t(x)^2 + b*t(x)
-            elif check_1(temp_expr):
-                return MathRelation.quadratic
+            # Если сумма имеет вид a*t(x)^2 + b*t(x)   КОММЕНТАРИИ НЕ УБИРАТЬ !!!
+            # elif check_1(temp_expr):
+            #     return MathRelation.quadratic
             else:
                 return MathRelation.undefined
 
         # Если 3 слагаемых
         elif temp_expr.func == sympy.core.add.Add and len(temp_expr.args) == 3:
             # Если сумма имеет вид a*t(x)^2 + b*t(x) + c
-            if (temp_expr.args[0].func in SP_TYPES_NUMS) and (check_1(temp_expr - temp_expr.args[0])):
+            if (temp_expr.args[0].func in SP_TYPES_NUMS) and (__check_1(temp_expr - temp_expr.args[0])):
                     return MathRelation.quadratic
             else:
                 return MathRelation.undefined
@@ -126,9 +127,9 @@ class MathRelation:
 
 
     def reduction(self):
-        """Сокращение обеих сторон выражения и раскрытие скобок."""
-        self.left_side = sympy.expand(sympy.powsimp(self.left_side))
-        self.right_side = sympy.expand(sympy.powsimp(self.right_side))
+        """Раскрытие скобок и сокращение обеих сторон выражения."""
+        self.left_side = sympy.powsimp(sympy.expand(self.left_side))
+        self.right_side = sympy.powsimp(sympy.expand(self.right_side))
 
 
     def moving(self, side: Side = Side.left):
@@ -155,17 +156,17 @@ class MathRelation:
 
 
     def divide_by_common_divisor(self):
-        """Делит выражение на self.common_divisor."""
-        if not self.common_divisor:
+        """Делит выражение на self.common_divisor, если оно не пусто."""
+        if not self.__common_divisor:
             pass
-        elif self.common_divisor.subs(self.var, 0).func == sympy.core.numbers.ComplexInfinity:
-            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
-            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
-            self.app_stage(f"Умножим обе стороны на {self.common_divisor ** -1}")
-        elif self.common_divisor.subs(self.var, 0) == 0:
-            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
-            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
-            self.app_stage(f"Разделим обе стороны на {self.common_divisor}")
+        elif self.__common_divisor.subs(self.var, 0).func == sympy.core.numbers.ComplexInfinity:
+            self.left_side = sympy.cancel(self.left_side / self.__common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.__common_divisor)
+            self.app_stage(f"Умножим обе стороны на {self.__common_divisor ** -1}")
+        elif self.__common_divisor.subs(self.var, 0) == 0:
+            self.left_side = sympy.cancel(self.left_side / self.__common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.__common_divisor)
+            self.app_stage(f"Разделим обе стороны на {self.__common_divisor} (+ 0 к ответу)")
             self.answer.append(0)
 
 

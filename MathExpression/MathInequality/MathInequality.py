@@ -1,5 +1,5 @@
-from MathExpression.MathRelation import MathRelation
-from MathExpression.MathEquality import MathEquality, LinearEquality, SquareEquality
+from ..MathRelation import MathRelation
+from ..MathEquality import MathEquality, LinearEquality, SquareEquality
 
 
 class LinearInequality(LinearEquality):

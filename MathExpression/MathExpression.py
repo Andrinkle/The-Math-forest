@@ -1,5 +1,5 @@
 from .MathRelation import EnteringExpressionError
-from .MathRelation import MathRelation
+# from .MathRelation import MathRelation
 from .MathEquality import MathEquality
 from .MathInequality import MathInequality
 
@@ -49,14 +49,8 @@ class MathExpression(MathInequality):
 
     def print_answer(self):
         """Вывод решения задачи."""
-
         if self.type_expression == MathExpression.equality:
-            print("Ответ:")
-            if len(self.answer) == 0:
-                print("  Решения нет.")
-            else:
-                for i in self.answer:
-                    print(f"  {self.var} = {i}")
+            self.print_answer_equation()
 
         elif self.type_expression == MathExpression.inequality:
             pass

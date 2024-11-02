@@ -7,7 +7,7 @@ class LinearEquality(MathRelation):
     """Класс решения псевдо-линейных уравнений."""
 
     def solving_linear_equation(self):
-        """Решение линейного уравнения."""
+        """Решение линейного уравнения, возвращает корень."""
 
         temp = [self.left_side, self.right_side]
         self.reduction()

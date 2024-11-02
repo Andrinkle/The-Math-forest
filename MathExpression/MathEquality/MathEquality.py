@@ -1,4 +1,4 @@
-from MathExpression.MathRelation import MathRelation, EnteringExpressionError, SP_TYPES_NUMS
+from MathExpression.MathRelation import MathRelation, EnteringExpressionError
 from .LinearEquality import LinearEquality
 from .SquareEquality import SquareEquality
 
@@ -20,4 +20,14 @@ class MathEquality(LinearEquality, SquareEquality):
                 self.answer.append(i)
         elif self.type_relation == MathEquality.undefined:
             raise EnteringExpressionError("Данная задача не решается.")
+
+
+    def print_answer_equation(self):
+        """Вывод решения задачи."""
+        print("Ответ:")
+        if len(self.answer) == 0:
+            print("  Решения нет.")
+        else:
+            for i in self.answer:
+                print(f"  {self.var} = {i}")
 

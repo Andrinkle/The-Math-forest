@@ -3,10 +3,10 @@ import sympy
 
 
 class SquareEquality(MathRelation):
-    """Класс решения квадратных* уравнений."""
+    """Класс решения псевдо-квадратных уравнений."""
 
     def solving_square_equation(self):
-        """Решение квадратного уравнения."""
+        """Решение квадратного уравнения, возвращает массив корней."""
 
         if self.right_side != 0:
             self.moving()
