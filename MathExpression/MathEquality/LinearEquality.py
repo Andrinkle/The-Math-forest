@@ -9,13 +9,6 @@ class LinearEquality(MathRelation):
     def solving_linear_equation(self):
         """Решение линейного уравнения, возвращает корень."""
 
-        temp = [self.left_side, self.right_side]
-        self.reduction()
-        if temp[0] != self.left_side or temp[1] != self.right_side:
-            self.app_stage("Сокращаем обе стороны")
-
-        self.divide_by_common_divisor()
-
         if self.right_side.subs(self.var, 0) != self.right_side:
             self.left_side = sympy.powsimp(self.left_side - (self.right_side - self.right_side.subs(self.var, 0)))
             self.right_side = self.right_side.subs(self.var, 0)

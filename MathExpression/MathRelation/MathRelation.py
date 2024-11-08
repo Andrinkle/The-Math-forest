@@ -47,7 +47,9 @@ class MathRelation:
         # Правая сторона
         self.right_side = sympy.sympify(exp_list[1], evaluate=False)
         # Разделить, если необходимо
-        self.__common_divisor = None
+        self.common_divisor = None
+        # Выражение для замены
+        self.replacement = None
         # Тип отношения
         self.type_relation = self.__define_relation_type()
         # Корни уравнения (!)
@@ -61,26 +63,39 @@ class MathRelation:
     def __define_relation_type(self) -> str:
         """Определяет тип отношения."""
 
-        def __check_1(expression) -> bool:
-            """Если сумма двух слагаемых имеет вид a*t(x)^2 + b*t(x)"""
-            temp = [self.discard_coef(expression.args[0]), self.discard_coef(expression.args[1])]
+        def __check_1(expression):
+            """Если сумма двух слагаемых имеет вид a*t(x)^2 + b*t(x). Возвращает t(x)."""
+
+            def discard_coef(expression):
+                """Если expression имеет вид a*t(x)^b, то возвращается [t(x), b]."""
+                if (expression.func == sympy.core.mul.Mul) and (expression.args[0].func in SP_TYPES_NUMS):
+                    expression = expression.args[1]
+                if (expression.func == sympy.core.power.Pow) and (expression.args[1].func in SP_TYPES_NUMS):
+                    return [expression.args[0], expression.args[1]]
+                return [expression, 1]
+
+            temp = [discard_coef(expression.args[0]), discard_coef(expression.args[1])]
             if (temp[0][0] == temp[1][0]) and (temp[0][1]*2 == temp[1][1] or temp[0][1] == temp[1][1]*2):
-                return True
-            return False
+                return True, temp[0][0]
+            return False, temp[0][0]
 
         # Временное выражение для проверки
-        temp_expr = sympy.expand(sympy.powsimp(self.left_side - self.right_side))
+        temp_expr = sympy.powsimp(sympy.expand(self.left_side - self.right_side))
 
         # Вынесение и удаление общих делителей
-        if (temp_expr != sympy.factor(temp_expr)) and (
-            # Если второй аргумент функции с конца является сумма,
-            # то эта функция либо возведение в степень, либо умножение минимум двух сумм,
-            # оба случая игнорируются
-            sympy.factor(temp_expr).args[-2].func != sympy.core.add.Add):
+        if (temp_expr != sympy.factor(temp_expr)):
+            k = 0
+            karetka = 0
+            temp_list = sympy.factor(temp_expr).args
+            for i in range(len(temp_list)):
+                if temp_list[i].func == sympy.core.add.Add:
+                    k += 1
+                    karetka = i
 
-            temp = sympy.factor(temp_expr).args[-1]
-            self.__common_divisor = sympy.cancel(temp_expr / temp)
-            temp_expr = temp
+            if k == 1:
+                temp = temp_list[karetka]
+                self.common_divisor = sympy.cancel(temp_expr / temp)
+                temp_expr = temp
 
         # Если 0 слагаемых
         if temp_expr.func == sympy.core.numbers.Zero:
@@ -88,13 +103,19 @@ class MathRelation:
 
         # Если 1 слагаемое
         elif temp_expr.func != sympy.core.add.Add:
-            return MathRelation.linear
+            if self.__is_there_replacement(temp_expr):
+                return MathRelation.linear
+            else:
+                return MathRelation.undefined
 
         # Если 2 слагаемых
         elif temp_expr.func == sympy.core.add.Add and len(temp_expr.args) == 2:
             # Если одно из слагаемых - число
-            if temp_expr.args[0].func in SP_TYPES_NUMS or temp_expr.args[1].func in SP_TYPES_NUMS:
-                return MathRelation.linear
+            if temp_expr.args[0].func in SP_TYPES_NUMS:
+                if self.__is_there_replacement(temp_expr.args[1]):
+                    return MathRelation.linear
+                else:
+                    return MathRelation.undefined
             # Если сумма имеет вид a*t(x)^2 + b*t(x)   КОММЕНТАРИИ НЕ УБИРАТЬ !!!
             # elif check_1(temp_expr):
             #     return MathRelation.quadratic
@@ -104,8 +125,12 @@ class MathRelation:
         # Если 3 слагаемых
         elif temp_expr.func == sympy.core.add.Add and len(temp_expr.args) == 3:
             # Если сумма имеет вид a*t(x)^2 + b*t(x) + c
-            if (temp_expr.args[0].func in SP_TYPES_NUMS) and (__check_1(temp_expr - temp_expr.args[0])):
+            b, t_x = __check_1(temp_expr - temp_expr.args[0])
+            if (temp_expr.args[0].func in SP_TYPES_NUMS) and b:
+                if self.__is_there_replacement(t_x):
                     return MathRelation.quadratic
+                else:
+                    return MathRelation.undefined
             else:
                 return MathRelation.undefined
 
@@ -146,29 +171,33 @@ class MathRelation:
         return f"{self.left_side} {self.__sign} {self.right_side}"
 
 
-    def discard_coef(self, expression):
-        """Если expression имеет вид a*t(x)^b, то возвращается [t(x), b]"""
-        if (expression.func == sympy.core.mul.Mul) and (expression.args[0].func in SP_TYPES_NUMS):
-            expression = expression.args[1]
-        if (expression.func == sympy.core.power.Pow) and (expression.args[1].func in SP_TYPES_NUMS):
-            return [expression.args[0], expression.args[1]]
-        return [expression, 1]
-
-
     def divide_by_common_divisor(self):
         """Делит выражение на self.common_divisor, если оно не пусто."""
-        if not self.__common_divisor:
+        if not self.common_divisor:
             pass
-        elif self.__common_divisor.subs(self.var, 0).func == sympy.core.numbers.ComplexInfinity:
-            self.left_side = sympy.cancel(self.left_side / self.__common_divisor)
-            self.right_side = sympy.cancel(self.right_side / self.__common_divisor)
-            self.app_stage(f"Умножим обе стороны на {self.__common_divisor ** -1}")
-        elif self.__common_divisor.subs(self.var, 0) == 0:
-            self.left_side = sympy.cancel(self.left_side / self.__common_divisor)
-            self.right_side = sympy.cancel(self.right_side / self.__common_divisor)
-            self.app_stage(f"Разделим обе стороны на {self.__common_divisor} (+ 0 к ответу)")
+        elif self.common_divisor.subs(self.var, 0).func == sympy.core.numbers.ComplexInfinity:
+            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
+            self.app_stage(f"Умножим обе стороны на {self.common_divisor ** -1}")
+        elif self.common_divisor.subs(self.var, 0) == 0:
+            self.left_side = sympy.cancel(self.left_side / self.common_divisor)
+            self.right_side = sympy.cancel(self.right_side / self.common_divisor)
+            self.app_stage(f"Разделим обе стороны на {self.common_divisor} (+ 0 к ответу)")
             self.answer.append(0)
 
 
-    def replacing(self, expression):
-        pass
+    def __is_there_replacement(self, expression) -> bool:
+        """Если expression не является переменной, то производится замена.
+           Возвращает True, если expression - произведение числа на функцию, иначе False."""
+        # Если выражение - произведение
+        if (expression.func == sympy.core.mul.Mul):
+            # Если произведение на число
+            if expression.args[0].func in SP_TYPES_NUMS:
+                if (expression.args[1] != self.var):
+                    self.replacement = expression.args[1]
+                return True
+            else:
+                return False
+        if (expression != self.var):
+            self.replacement = expression
+        return True
