@@ -139,9 +139,12 @@ class MathRelation:
             return MathRelation.undefined
 
 
-    def app_stage(self, description:str):
+    def app_stage(self, description:str, result:str=None):
         """Добавление нового этапа в решение."""
-        self.__stages_of_solving.append([description, str(self)])
+        if result == None:
+            self.__stages_of_solving.append([description, str(self)])
+        else:
+            self.__stages_of_solving.append([description, result])
 
 
     def print_stages(self):
