@@ -1,7 +1,7 @@
 from .MathRelation import EnteringExpressionError
-# from .MathRelation import MathRelation
 from .MathEquality import MathEquality
 from .MathInequality import MathInequality
+
 
 
 class MathExpression(MathInequality):
@@ -11,14 +11,14 @@ class MathExpression(MathInequality):
     inequality = 'i'
     system = 's'
 
-    def __init__(self, str_expression: str, variable: str):
-        sign = MathExpression.define_expression_type(str_expression)
+    def __init__(self, expression: str, variable: str):
+        sign = MathExpression.define_expression_type(expression)
         if sign == '=':
-            MathEquality.__init__(self, str_expression, variable)
-            self.type_expression = MathExpression.equality
+            MathEquality.__init__(self, expression, variable)
+            self.__type_expression = MathExpression.equality
         else:
-            MathInequality.__init__(self, str_expression, sign, variable)
-            self.type_expression = MathExpression.inequality
+            MathInequality.__init__(self, expression, sign, variable)
+            self.__type_expression = MathExpression.inequality
 
 
     def define_expression_type(str_expression: str) -> str:
@@ -41,20 +41,20 @@ class MathExpression(MathInequality):
 
     def solving_expression(self):
         """Решение задачи."""
-        if self.type_expression == MathExpression.equality:
-            return self.solving_equation()
-        elif self.type_expression == MathExpression.inequality:
-            return self.solving_inequation()
+        if self.__type_expression == MathExpression.equality:
+            self.solving_equation()
+        elif self.__type_expression == MathExpression.inequality:
+            self.solving_inequation()
 
 
     def print_answer(self):
         """Вывод решения задачи."""
-        if self.type_expression == MathExpression.equality:
+        if self.__type_expression == MathExpression.equality:
             self.print_answer_equation()
 
-        elif self.type_expression == MathExpression.inequality:
+        elif self.__type_expression == MathExpression.inequality:
             pass
 
-        elif self.type_expression == MathExpression.system:
+        elif self.__type_expression == MathExpression.system:
             pass
 

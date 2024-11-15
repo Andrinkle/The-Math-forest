@@ -1,11 +1,12 @@
-from MathExpression.MathRelation import MathRelation
+from typing import Any
+from ..MathRelation import MathRelation
 import sympy
 
 
 class SquareEquality(MathRelation):
     """Класс решения псевдо-квадратных уравнений."""
 
-    def solving_square_equation(self):
+    def solving_square_equation(self) -> list[Any]:
         """Решение квадратного уравнения, возвращает массив корней."""
 
         if self.right_side.subs(self.var, 0) != self.right_side:
@@ -52,9 +53,6 @@ class SquareEquality(MathRelation):
             print(f"Корень дискриминанта равен {sqrt_D}")
             root = -b / (2*a)
             roots.append(root)
-
-        else:
-            roots = []
 
         return roots
 

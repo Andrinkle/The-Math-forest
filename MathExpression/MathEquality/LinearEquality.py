@@ -1,4 +1,5 @@
-from MathExpression.MathRelation import MathRelation
+from typing import Any
+from ..MathRelation import MathRelation
 import sympy
 
 
@@ -6,7 +7,7 @@ import sympy
 class LinearEquality(MathRelation):
     """Класс решения псевдо-линейных уравнений."""
 
-    def solving_linear_equation(self):
+    def solving_linear_equation(self) -> Any:
         """Решение линейного уравнения, возвращает корень."""
 
         if self.right_side.subs(self.var, 0) != self.right_side:
