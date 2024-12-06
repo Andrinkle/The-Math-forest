@@ -1,9 +1,9 @@
-from ..MathRelation import MathRelation
-from ..MathEquality import MathEquality, LinearEquality, SquareEquality
+from .MathRelation import MathRelation
+from .MathEquality import MathEquality
 
 
-class LinearInequality(LinearEquality):
-    """Класс решения псевдо-линейных неравенств."""
+# class LinearInequality(LinearEquality):
+#     """Класс решения псевдо-линейных неравенств."""
 
 
 
@@ -12,12 +12,12 @@ class LinearInequality(LinearEquality):
 
 
 
-class SquareInequality(SquareEquality):
-    """Класс решения псевдо-квадратных неравенств."""
+# class SquareInequality(SquareEquality):
+#     """Класс решения псевдо-квадратных неравенств."""
 
 
 
-class MathInequality(MathEquality, LinearInequality, SquareInequality):
+class MathInequality(MathEquality):
     """Класс неравенств."""
 
     def __init__(self, str_expression: str, sign: str, variable: str):
@@ -27,3 +27,5 @@ class MathInequality(MathEquality, LinearInequality, SquareInequality):
     def solving_inequation(self):
         """Решение неравенства"""
         pass
+
+

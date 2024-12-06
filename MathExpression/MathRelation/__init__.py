@@ -1,4 +1,6 @@
-from .MathRelation import MathRelation, EnteringExpressionError, SP_TYPES_NUMS
+from .MathRelation import MathRelation, EnteringExpressionError
+from .MathEquality import MathEquality
+from .MathInequality import MathInequality
 
-__all__ = ['MathRelation', 'EnteringExpressionError', 'SP_TYPES_NUMS']
+__all__ = ['MathRelation', 'MathEquality', 'MathInequality', 'EnteringExpressionError']
 
