@@ -85,9 +85,9 @@ class MathEquality(MathRelation):
 
         # Распределение коэфицетов по буквам
         for i in range(len(koefs)):
-            if koefs[i].func.is_number:
+            if koefs[i].is_number:
                 c = koefs[i]
-            elif koefs[i].func == sympy.core.mul.Mul and koefs[i].args[0].func.is_number:
+            elif koefs[i].is_Mul and koefs[i].args[0].is_number:
                 if koefs[i].args[1] == self.var:
                     b = koefs[i].args[0]
                 else:
@@ -100,30 +100,25 @@ class MathEquality(MathRelation):
 
         roots = []
 
-        # print(c)
         d = b**2-4*a*c
-        self.app_stage("Вычислим дискриминант по формуле D = b**2-4*a*c:",  f"D = {b}**2-4*{a}*{c} = {b**2} - ({4*a*c}) = {d}")
+        self.app_stage("Вычислим дискриминант по формуле D = b**2-4*a*c:",  f"D = {b}**2-4*{a}*{c} = {d}")
 
         if d > 0:
-            self.app_stage("Так как дискриминант больше 0, то будет два корня", f"D = {d} > 0")
+            self.app_stage(f"Так как D = {d} > 0, то будет два корня")
             sqrt_D = sympy.sqrt(d)
-            self.app_stage("Корень дискриминанта:", f"sqrt(D) = {sqrt_D}")
-            self.app_stage("Первый корень вчитываем по формуле: (-b+sqtr(D)) / 2*a", f"({-b}+{sqrt_D}) / 2 * {a}")
             root_1 = (-b + sqrt_D) / (2*a)
-            self.app_stage("Первый корень:", f"{root_1}")
             roots.append(root_1)
+            self.app_stage("Первый корень вчитываем по формуле: (-b+sqtr(D)) / 2*a", f"({-b}+{sqrt_D}) / 2 * {a} = {root_1}")
 
-            self.app_stage("Второй корень вчитываем по формуле: (-b-sqtr(D)) / 2*a", f"({-b}+{sqrt_D}) / 2 * {a}")
             root_2 = (-b - sqrt_D) / (2*a)
-            self.app_stage("Воторой корень:", f"{root_2}")
             roots.append(root_2)
+            self.app_stage("Второй корень вчитываем по формуле: (-b-sqtr(D)) / 2*a", f"({-b}+{sqrt_D}) / 2 * {a} = {root_2}")
 
         elif d == 0:
-            self.app_stage("Так как дискриминант равен 0, то будет один корень", f"D = {d}")
-            sqrt_D = sympy.sqrt(d)
-            self.app_stage("Корень дискриминанта:", f"sqrt(D) = {sqrt_D}")
+            self.app_stage("Так как D = 0, то будет один корень")
             root = -b / (2*a)
             roots.append(root)
+            self.app_stage("Второй корень вчитываем по формуле: -b / 2*a", f"{-b} / 2 * {a} = {root}")
 
         return roots
 
