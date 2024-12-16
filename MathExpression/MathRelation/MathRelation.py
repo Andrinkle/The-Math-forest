@@ -43,10 +43,15 @@ class MathRelation:
         self.right_side: Any = sympy.sympify(exp_list[1], evaluate=False)
         # Выражение, которое будет делить/умножать данное отношение
         self.common_divisor: Any = None
+        # Тип отношения
+        self.type_relation: int = self.__define_relation_type()
+
+        # Переменная для замены
+        self.var_replace: sympy.Symbol
         # Выражение для замены (t(x))
         self.replacement: Any = None
-        # Тип отношения
-        self.type_relation: str = self.__define_relation_type()
+        # Тип замены
+        self.type_replace: int
 
         # Знак отношения
         self.__sign: str = sign
@@ -56,6 +61,11 @@ class MathRelation:
         self.__stages_of_solving: list[list[str]] = []
         # Первый этап - сама задача
         self.app_stage("Начальная задача")
+
+
+
+    def __str__(self) -> str:
+        return f"{self.left_side} {self.__sign} {self.right_side}"
 
 
 
@@ -137,7 +147,7 @@ class MathRelation:
 
 
 
-    def __define_replace_type(expression: Any) -> str:
+    def __define_replace_type(expression: Any) -> int:
         pass
 
 
@@ -182,11 +192,6 @@ class MathRelation:
 
 
 
-    def __str__(self) -> str:
-        return f"{self.left_side} {self.__sign} {self.right_side}"
-
-
-
     def divide_by_common_divisor(self) -> bool:
         """Делит выражение на self.common_divisor, если оно не пусто.
            Возвращает True, если 0 является корнем уравнения (!)."""
@@ -224,12 +229,14 @@ class MathRelation:
                 # Если выражение для замены - не сама переменная
                 if (expression.args[1] != self.var):
                     self.replacement = expression.args[1]
+                    self.type_replace = self.__define_replace_type(expression.args[1])
                 return True
             else:
                 return False
         # Если выражение для замены - не сама переменная
         if (expression != self.var):
             self.replacement = expression
+            self.type_replace = self.__define_replace_type(expression)
         return True
 
 

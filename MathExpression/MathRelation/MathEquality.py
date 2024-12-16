@@ -11,6 +11,28 @@ class MathEquality(MathRelation):
         MathRelation.__init__(self, equality, '=', variable)
         # Корни уравнения
         self.__answer_of_equality: list[Any] = []
+        # Корни уравнения, если была произведена замена
+        self.__answer_of_replacement: list[Any] = []
+
+
+
+    def print_answer_equation(self) -> None:
+        """Вывод решения уравнения."""
+        print("Ответ:")
+        if (len(self.__answer_of_equality) == 0):
+            print("  Решения нет.")
+        else:
+            for i in self.__answer_of_equality:
+                print(f"  {self.var} = {i}")
+
+
+
+    def __app_answer(self, expr: Any) -> None:
+        """Добавление корня в решение."""
+        if (self.replacement):
+            self.__answer_of_replacement.append(expr)
+        else:
+            self.__answer_of_equality.append(expr)
 
 
 
@@ -36,27 +58,61 @@ class MathEquality(MathRelation):
 
         # Деление на общий делитель
         if (self.divide_by_common_divisor()):
-            self.__answer_of_equality.append(0)
+            self.__app_answer(0)
 
         # Основное решение уравнения
         if (self.type_relation == MathEquality.linear):
-            self.__answer_of_equality.append(self.solving_linear_equation())
+            self.__app_answer(self.solving_linear_equation())
         elif (self.type_relation == MathEquality.quadratic):
             for i in self.solving_square_equation():
-                self.__answer_of_equality.append(i)
+                self.__app_answer(i)
         elif (self.type_relation == MathEquality.undefined):
             raise EnteringExpressionError("Данная задача не решается.")
 
 
 
-    def print_answer_equation(self) -> None:
-        """Вывод решения уравнения."""
-        print("Ответ:")
-        if (len(self.__answer_of_equality) == 0):
-            print("  Решения нет.")
-        else:
-            for i in self.__answer_of_equality:
-                print(f"  {self.var} = {i}")
+    def solving_exponential(self, base, degree):
+        """Функция решения обратной замены a^(bx^c+d) = y."""
+        for root in self.__answer_of_equality:
+            cdegree = degree
+            if (base > 0) and (base != 1):
+                resh = sympy.log(root, base) # left_part
+
+                # Поиск коэфицента d
+                degree_args = cdegree.args
+                for i in degree_args:
+                    if i.is_number:
+                        d = i
+                resh = resh - d # left_part
+                cdegree = cdegree - d # right_part
+
+                # Поиск коэфицента b
+                degree_args = cdegree.args
+                b = 1
+                for i in degree_args:
+                    if i.is_number:
+                        b = i
+                resh = resh / b # left_part
+                cdegree = cdegree / b # right_part
+
+                # Поиск коэфицента c
+                degree_args = cdegree.args
+                c = 1
+                for i in degree_args:
+                    if i.is_number:
+                        c = i
+                resh = pow(resh, 1/c) # left_part
+                cdegree = pow(cdegree, 1/c) # right_part
+
+
+
+    def solving_power(self, degree):
+        """Метод решения уравнения x^a = y."""
+        for root in self.__answer_of_equality:
+            if root >= 0:
+                self.resheniya.append(pow(root, 1/degree))
+                if degree % 2 == 0: # Проверка на чётность
+                    self.resheniya.append(-(pow(root, 1/degree))) # Добавление в ответ -x
 
 
 

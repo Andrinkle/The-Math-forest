@@ -163,7 +163,7 @@ class TextToMath:
             elif token.lemma_ == "закрыть" and i + 1 < len(doc) and doc[i + 1].lemma_ == "скобка":
                 result += ")"
                 i += 1
-            
+
             i += 1
 
         return result
@@ -173,7 +173,8 @@ nlp = spacy.load("ru_core_news_sm")
 converter = TextToMath(nlp)
 
 # Пример использования
-text = "Косинус открыть скобку пи умножить икс закрыть скобку плюс два в степени пятьсот восемьдесят два далее е в степени два делить на пять"
+# text = "Косинус открыть скобку пи умножить икс закрыть скобку плюс два в степени пятьсот восемьдесят два далее е в степени два делить на пять"
+text = "икс в степени пи"
 result = converter.convert_text_to_expression(text)
 print("Result:", result)
 

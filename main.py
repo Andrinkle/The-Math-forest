@@ -1,14 +1,15 @@
 from MathExpression import *
 
 # y = MathExpression('2*x^2 - 6*x = 4', 'x')
-y = MathExpression('sin(x)-4 = 0', 'x')
+y = MathExpression('x**-1 = 4', 'x')
+# y = MathExpression('sin(x)-4 = 0', 'x')
+print(y)
 y.solving_expression()
 print()
 y.print_stages()
 print()
 y.print_answer()
 print()
-
 
 
 # Начальная задача
